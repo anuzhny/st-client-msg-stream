@@ -125,7 +125,7 @@ object ClientMsg {
 
     val sc = new SparkContext(sparkConf)
     sc.hadoopConfiguration.set("parquet.enable.summary-metadata", "false")
-    val ssc = new StreamingContext(sc, Seconds(60*30))
+    val ssc = new StreamingContext(sc, Seconds(60*20))
 
     try {
       val kafkaConf = Map(
@@ -161,19 +161,21 @@ object ClientMsg {
                   })
                 }, true)
 
-                def savePart(group : Tuple3[Int,Int,Int], data: Iterable[ClientMsgStr]) {
-                  val saveRootPath: String = "/user/stcuscol/result/clients_events/year=" + group._1.toString + "/month=" + group._2.toString + "/day=" + group._3.toString +"/"
+                def savePart(fileName :  String, data: Iterable[ClientMsgStr]) {
                   val df1 = data.toList.toDF()
-                  df1.save(saveRootPath, "parquet", org.apache.spark.sql.SaveMode.valueOf("Append"))
+                  df1.save(fileName, "parquet", org.apache.spark.sql.SaveMode.valueOf("Append"))
                 }
 
-                def groupName(Ts: Long) = {
-
-                  ((Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getYear,(Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getMonthOfYear, (Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getDayOfMonth)
+                def groupName(Ts: Long): String = {
+                  val year: String = (Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getYear.toString
+                  val month: String = (Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getMonthOfYear.toString
+                  val day: String = (Ts*1000).toDateTime.withZone(DateTimeZone.forID("Etc/GMT-3")).getDayOfMonth.toString
+                  "/user/stcuscol/result/clients_events/year=" + year + "/month=" + month + "/day=" + day +"/"
                 }
 
-                val res = result.groupBy(r => groupName(r.Timestamp)).collect()
+                val res = result.collect().groupBy(r => groupName(r.Timestamp))
                 res.foreach(msg => savePart(msg._1, msg._2))
+
 
               } catch {
                 case e: Exception =>
