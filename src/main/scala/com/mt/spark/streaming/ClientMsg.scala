@@ -35,10 +35,7 @@ import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.github.nscala_time.time.Imports._
-//import com.mt.spark.streaming.ClientMsg.ClientMsgStr
 import org.joda.time.DateTime
-//import org.joda.time._
-
 
 
 case class ClientMsgStr(
@@ -58,28 +55,6 @@ case class ClientMsgStr(
                          Message: String,
                          Timestamp: Long
                          )
-
-/*
-object ClientMsgStr {
-  def apply(
-             Type: String,
-             MAC: String,
-             NASIP: String,
-             SSID: String,
-             SegmentId: Int,
-             Premium: Boolean,
-             APMAC: String,
-             ClientIP: String,
-             MSISDN: String,
-             Email: String,
-             Address: String,
-             Gender: String,
-             Age: Int,
-             Message: String,
-             Timestamp: Long): ClientMsgStr = ClientMsgStr(Type,  MAC,  NASIP, SSID, SegmentId, Premium,  APMAC, ClientIP,  MSISDN, Email, Address, Gender, Age, Message, Timestamp, (Timestamp*1000).toDateTime.getYear(),(Timestamp*1000).toDateTime.getMonthOfYear(), (Timestamp*1000).toDateTime.getDayOfMonth())
-}
-
-*/
 
 object ClientMsg {
   val msgSchema = SchemaBuilder
@@ -176,6 +151,8 @@ object ClientMsg {
                 val res = result.collect().groupBy(r => groupName(r.Timestamp))
                 res.foreach(msg => savePart(msg._1, msg._2))
 
+                val df_res = result.toDF()
+                df_res.registerTempTable("ClientMsg")
 
               } catch {
                 case e: Exception =>
