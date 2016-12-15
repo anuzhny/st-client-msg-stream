@@ -134,7 +134,7 @@ object ClientMsg {
                       case e: Exception => None;
                     }
                   })
-                }, true)
+                }, preservesPartitioning = true)
 
                 def savePart(fileName :  String, data: Iterable[ClientMsgStr]) {
                   val df1 = data.toList.toDF()
@@ -156,25 +156,25 @@ object ClientMsg {
 
               } catch {
                 case e: Exception =>
-                  println("Map value. Exception:" + e.getMessage);
+                  println("Map value. Exception:" + e.getMessage)
                   e.printStackTrace();
               }
             }
             catch {
               case e: Exception =>
-                println("Create RDD. Exception:" + e.getMessage);
+                println("Create RDD. Exception:" + e.getMessage)
                 e.printStackTrace();
             }
           }
         })
       } catch {
         case e: Exception =>
-          println("Writing files after job. Exception:" + e.getMessage);
+          println("Writing files after job. Exception:" + e.getMessage)
           e.printStackTrace();
       }
     } catch {
       case e: Exception =>
-        println("Kafka Stream. Writing files after job. Exception:" + e.getMessage);
+        println("Kafka Stream. Writing files after job. Exception:" + e.getMessage)
         e.printStackTrace();
     }
     ssc.start()
