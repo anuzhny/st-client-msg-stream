@@ -93,6 +93,7 @@ object ClientMsg {
     sparkConf.set("spark.io.compression.codec", "snappy")
     sparkConf.set("spark.rdd.compress", "true")
     sparkConf.set("spark.streaming.backpressure.enabled", "true")
+    sparkConf.set("spark.akka.frameSize", "100")
 
     sparkConf.set("spark.sql.parquet.compression.codec", "snappy")
     sparkConf.set("spark.sql.parquet.mergeSchema", "true")
