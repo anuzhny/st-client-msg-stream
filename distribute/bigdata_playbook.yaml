@@ -1,0 +1,15 @@
+---
+- hosts: spark_hosts
+  user: root
+  tasks:
+   - name: create main directory for st-client-msg-stream
+     file: path=/home/stcuscol/clientMsg state=directory owner=stcuscol group=stcuscol mode=0755 recurse=yes
+   - name: create lib directory for st-client-msg-stream
+     file: path=/home/stcuscol/clientMsg/lib state=directory owner=stcuscol group=stcuscol mode=0755 recurse=yes
+   - name: copy App executor
+     copy: src=/home/anuzhny/Dev/scala/st-client-msg-stream/distribute/appExec.sh dest=/home/stcuscol/clientMsg/appExec.sh owner=stcuscol group=stcuscol mode=0550
+   - name: copy lib st-client-msg-stream jars file
+     copy: src={{ item.src }} dest={{ item.dest }} owner=stcuscol group=stcuscol mode=0444
+     with_items:
+      - { src: '/home/anuzhny/Dev/scala/st-client-msg-stream/target/scala-2.10/st-client-msg-stream_2.10-2.0.jar', dest: '/home/stcuscol/clientMsg/lib/st-client-msg-stream_2.10-2.0.jar' }
+      - { src: '/home/anuzhny/Dev/scala/st-client-msg-stream/target/scala-2.10/st-client-msg-stream-assembly_2.10-1.0.jar', dest: '/home/stcuscol/clientMsg/lib/st-client-msg-stream-assembly_2.10-1.0.jar' }
