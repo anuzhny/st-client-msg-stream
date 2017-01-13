@@ -101,7 +101,7 @@ object ClientMsg {
 
     val sc = new SparkContext(sparkConf)
     sc.hadoopConfiguration.set("parquet.enable.summary-metadata", "false")
-    val ssc = new StreamingContext(sc, Seconds(60*20))
+    val ssc = new StreamingContext(sc, Seconds(60*30))
 
     try {
       val kafkaConf = Map(
